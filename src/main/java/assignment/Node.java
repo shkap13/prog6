@@ -4,13 +4,21 @@ public class Node<K,V> {
     private int priorityValue;
     private K key;
     private V value;
-    private Node<K,V> left;
-    private Node<K,V> right;
+     Node<K,V> left;
+     Node<K,V> right;
 
     public Node(){
         priorityValue = 0;
         key = null;
         value = null;
+        left = null;
+        right = null;
+    }
+
+    public Node(int pri, K k, V v){
+        priorityValue = pri;
+        key = k;
+        value = v;
         left = null;
         right = null;
     }
@@ -61,5 +69,29 @@ public class Node<K,V> {
 
     public Node<K,V> getRight(){
         return right;
+    }
+
+    public void printNode(){
+        K l;
+        K r;
+        System.out.println("priority value: " + getPriorityValue() + ", key is: " + getKey() + ", value is: " + getValue());
+
+        if(left != null){
+            l = left.getKey();
+        }
+
+        else{
+            l = null;
+        }
+
+        if(right != null){
+            r = right.getKey();
+        }
+
+        else{
+            r = null;
+        }
+
+        System.out.println("left is: " + l + ", right is: " + r);
     }
 }
