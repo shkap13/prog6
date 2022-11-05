@@ -77,7 +77,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         }
         
     }
-    
+
     @Override
     public V remove(K key) {
         boolean childLeft = true;
@@ -90,6 +90,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
             leftPriVal = -1;
             rightPriVal = -1;
             current = findNode(key, false);
+
+            if(key.compareTo(current.getKey()) != 0){
+                return null;
+            }
 
             if(current.getLeft() != null){
                 leftPriVal = current.getLeft().getPriorityValue();

@@ -229,9 +229,10 @@ public class TestingFile {
         treap.printTreeInOrder(treap.root);
 
         System.out.println("*****");
-        treap.remove(12);
-        treap.remove(100);
-        treap.remove(2);
+        //treap.remove(12);
+        //treap.remove(100);
+        //treap.remove(2);
+        treap.remove(9);
 
         treap.printTreeInOrder(treap.root);
 
