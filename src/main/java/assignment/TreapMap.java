@@ -150,19 +150,44 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
         return current.getValue();
 
-
     } 
         
 
     @Override
     public Treap[] split(K key) {
-        // TODO Auto-generated method stub
-        return null;
+        V value = root.getValue();
+
+        insert(key, value, MAX_PRIORITY);
+
+        Node<K,V> rootNode = findNode(key, false);
+        Node<K,V> newLeftRoot = rootNode.getLeft();
+        Node<K,V> newRightRoot = rootNode.getRight();
+
+        rootNode.setLeft(null);
+        rootNode.setRight(null);
+        
+        TreapMap[] treapArray = new TreapMap[2];
+        
+        TreapMap leftTreap = new TreapMap<>(newLeftRoot);
+        treapArray[0] = leftTreap;
+
+        TreapMap rightTreap = new TreapMap<>(newRightRoot);
+        treapArray[1] = rightTreap;
+
+
+        return treapArray;
     }
 
     @Override
     public void join(Treap t) {
-        // TODO Auto-generated method stub
+        
+        //if the first key this is greater than t, then t becomes left subtree and this becomes right subtree
+        //else this becomes left subtree and t becomes right subtree
+
+        //make some new treap with some random root (and perhaps make this root have max priority)
+        //then x.setLeft and x.setRight
+
+        //then remove x -- even if there are duplicates, will automatically remove x first because of how findNode works
         
     }
 
@@ -180,8 +205,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
     @Override
     public Iterator iterator() {
-        // TODO Auto-generated method stub
-        return null;
+       return null;
     }
 
     @Override
@@ -189,6 +213,8 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         // TODO Auto-generated method stub
         return 0;
     }
+
+    
 
     //overloaded insert
     public void insert(K key, V value, int pri) {
@@ -200,15 +226,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         Node<K,V> newNode = new Node<K,V>(newPriority, key, value);
 
         //assuming no duplicates at the moment
-        Node<K,V> parentNode = findNode(key, false);
+        Node<K,V> parentNode = findNode(key, true);
 
         if(parentNode == null){
             root = newNode;
-            return;
-        }
-
-        if(parentNode.getKey().compareTo(key) == 0){
-            parentNode.setValue(value);
             return;
         }
 
@@ -316,10 +337,6 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
     public void rotateLeft(Node<K,V> center){
 
-        //WHAT IF CENTER EQUALS ROOT
-        if(center.equals(root)){
-
-        }
         Node<K,V> parent = stack.pop();
         
         //move the center node's left child, replacing itself as its parent's right child
