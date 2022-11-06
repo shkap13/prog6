@@ -79,7 +79,7 @@ public class Node<K,V> {
         return right;
     }
 
-    public Node<K,V> parent(){
+    public Node<K,V> getParent(){
         return parent;
     }
     public void printNode(){

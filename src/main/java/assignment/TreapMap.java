@@ -41,9 +41,8 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         //create new node with key, val and priority value
         Node<K,V> newNode = new Node<K,V>(newPriority, key, value);
 
-        //finding the parent node
+        //finding the parent node if key is not already in the treap
         Node<K,V> parentNode = findNode(key, false);
-
 
         if(parentNode == null){
             root = newNode;
@@ -65,9 +64,9 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
             parentNode.setRight(newNode);
         }
         
-
+        newNode.setParent(parentNode);
         //need to fix heap property
-        while((!stack.isEmpty()) && (newNode.getPriorityValue() > stack.peek().getPriorityValue())){
+        while((newNode.getParent() != null) && (newNode.getPriorityValue() > newNode.getParent().getPriorityValue())){
             if(newNode.getKey().compareTo(stack.peek().getKey()) < 0){
                 rotateRight(newNode);
             }
@@ -108,15 +107,13 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
             }
         
             else if(rightPriVal >= leftPriVal){
-                rotateLeft(findNode(current.getRight().getKey(), false));
+                rotateLeft(current.getRight());
                 childLeft = true;
             }
 
             else{
-                rotateRight(findNode(current.getLeft().getKey(), false));
+                rotateRight(current.getLeft());
                 childLeft = false;
-                //System.out.println("after rotate: parentNode is: " + parentNode.getKey() + ", currentNode is: " + current.getKey() + ", current child: " + current.getLeft().getKey());
-                //printTreeInOrder(root);
 
             }
 
@@ -153,17 +150,41 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
     public Treap<K,V>[] split(K key) {
         V value = root.getValue();
 
+        Node<K,V> checkNode = findNode(key, false);
+
+        if(checkNode.getKey().compareTo(key) == 0){
+            remove(checkNode.getKey());
+        }
+
+        else{
+            checkNode = null;
+        }
+
+
+        fixMaxPriorities(root);
+
         insert(key, value, MAX_PRIORITY);
 
         Node<K,V> rootNode = findNode(key, false);
         Node<K,V> newLeftRoot = rootNode.getLeft();
+        newLeftRoot.setParent(null);
         Node<K,V> newRightRoot = rootNode.getRight();
+        newRightRoot.setParent(null);
 
         System.out.println("in split!!");
         System.out.println(toString());
         System.out.println("********");
+
+        
+        if(checkNode != null){
+            rootNode.setValue(checkNode.getValue());
+            newRightRoot = rootNode;
+        }
+        else{
+            rootNode.setRight(null);
+        }
+
         rootNode.setLeft(null);
-        rootNode.setRight(null);
         
         TreapMap[] treapArray = new TreapMap[2];
         
@@ -171,6 +192,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         treapArray[0] = leftTreap;
 
         TreapMap rightTreap = new TreapMap<>(newRightRoot);
+        
         treapArray[1] = rightTreap;
 
 
@@ -294,7 +316,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         //create new node with key, val and priority value
         Node<K,V> newNode = new Node<K,V>(newPriority, key, value);
 
-        //assuming no duplicates at the moment --- becomes problem when there are duplicates
+        //assuming no duplicates at the moment --- becomes problem when there are duplicates for split
         Node<K,V> parentNode = findNode(key, true);
 
         if(parentNode == null){
@@ -310,9 +332,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
             parentNode.setRight(newNode);
         }
         
+        newNode.setParent(parentNode);
         //fixing heap property
-        while((!stack.isEmpty()) && (newNode.getPriorityValue() > stack.peek().getPriorityValue())){
-            if(newNode.getKey().compareTo(stack.peek().getKey()) < 0){
+        while((newNode.getParent() != null) && (newNode.getPriorityValue() > newNode.getParent().getPriorityValue())){
+            if(newNode.getKey().compareTo(newNode.getParent().getKey()) < 0){
                 rotateRight(newNode);
             }
             else{
@@ -339,6 +362,8 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
     //returns node with same key or parent of node of with same key
     //if key is not in tree, returns the parent node (regardless of parent being true or false)
     public Node<K,V> findNode(K key, boolean parent){
+
+        if(key == null)
         
         if(root == null){
             return null;
@@ -352,7 +377,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         stack.push(root);
 
 
-        while(true){
+        while(current != null){
 
             //if same key is found, the node is returned
             if(key.compareTo(current.getKey()) == 0){
@@ -392,7 +417,11 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
                 parentNode = current;
                 current = current.getRight();
             }
+
         }        
+        
+        return null;
+
     }
 
     //randomly create priority value
@@ -403,13 +432,48 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         return intRandom;
     }
 
+    // public void rotateLeft(Node<K,V> center){
+
+    //     Node<K,V> parent = stack.pop();
+        
+    //     //move the center node's left child, replacing itself as its parent's right child
+    //     if(center.getLeft()!= null){
+    //         parent.setRight(center.getLeft());
+    //     }
+
+    //     //if the center does not have a left, still replacing the parents right child
+    //     else{
+    //         parent.setRight(null);
+    //     }
+
+    //     center.setLeft(parent);
+
+    //     //setting the replacig parent/grandparent/grandparent node's left with center
+    //     if(!stack.isEmpty()){
+    //         if((stack.peek().getLeft() != null) && (stack.peek().getLeft().getKey().compareTo(parent.getKey()) == 0)){
+    //             stack.peek().setLeft(center);
+    //         }
+    
+    //         else{
+    //             stack.peek().setRight(center);
+    //         }
+            
+    //     }
+
+    //     //if the stack is empty and we are adding a node, it must be the root
+    //     else{
+    //         root = center;
+    //     }
+    // }
+
     public void rotateLeft(Node<K,V> center){
 
-        Node<K,V> parent = stack.pop();
+        Node<K,V> parent = center.getParent();
         
         //move the center node's left child, replacing itself as its parent's right child
         if(center.getLeft()!= null){
             parent.setRight(center.getLeft());
+            center.getLeft().setParent(parent);
         }
 
         //if the center does not have a left, still replacing the parents right child
@@ -418,15 +482,16 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         }
 
         center.setLeft(parent);
+        Node<K,V> grandparent = parent.getParent();
 
         //setting the replacig parent/grandparent/grandparent node's left with center
-        if(!stack.isEmpty()){
-            if((stack.peek().getLeft() != null) && (stack.peek().getLeft().getKey().compareTo(parent.getKey()) == 0)){
-                stack.peek().setLeft(center);
+        if(grandparent != null){
+            if((grandparent.getLeft() != null) && (grandparent.getLeft().getKey().compareTo(parent.getKey()) == 0)){
+                grandparent.setLeft(center);
             }
     
             else{
-                stack.peek().setRight(center);
+                grandparent.setRight(center);
             }
             
         }
@@ -435,13 +500,46 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         else{
             root = center;
         }
+
+        center.setParent(grandparent);
+        parent.setParent(center);
     }
         
-    public void rotateRight(Node<K,V> center){
-        Node<K,V> parent = stack.pop();
+    // public void rotateRight(Node<K,V> center){
+    //     Node<K,V> parent = stack.pop();
         
+    //     if(center.getRight()!= null){
+    //         parent.setLeft(center.getRight());
+    //     }
+
+    //     else{
+    //         parent.setLeft(null);
+    //     }
+        
+    //     center.setRight(parent);
+        
+    //     // && (stack.peek().getRight() != null)
+    //     if((!stack.isEmpty())){
+    //         if((stack.peek().getLeft() != null) && (stack.peek().getLeft().getKey().compareTo(parent.getKey()) == 0)){
+    //             stack.peek().setLeft(center);
+    //         }
+    
+    //         else{
+    //             stack.peek().setRight(center);
+    //         }
+    //     }
+
+    //     else{
+    //         root = center;
+    //     }
+    // }
+
+    public  void rotateRight(Node<K,V> center){
+        Node<K,V> parent = center.getParent();
+
         if(center.getRight()!= null){
             parent.setLeft(center.getRight());
+            center.getRight().setParent(parent);
         }
 
         else{
@@ -449,21 +547,27 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         }
         
         center.setRight(parent);
-        
-        // && (stack.peek().getRight() != null)
-        if((!stack.isEmpty())){
-            if((stack.peek().getLeft() != null) && (stack.peek().getLeft().getKey().compareTo(parent.getKey()) == 0)){
-                stack.peek().setLeft(center);
+
+        Node<K,V> grandparent = parent.getParent();
+        if(grandparent != null){
+            if((grandparent.getLeft() != null) && (grandparent.getLeft().getKey().compareTo(parent.getKey()) == 0)){
+                grandparent.setLeft(center);
+                
             }
-    
+
             else{
-                stack.peek().setRight(center);
+                grandparent.setRight(center);
             }
+
         }
 
         else{
             root = center;
         }
+
+        center.setParent(grandparent);
+        parent.setParent(center);
+
     }
 
     public void preOrder(Node<K,V> r, int numOfSpaces){      
@@ -478,6 +582,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         }  
 
         tString = tString + "[" + r.getPriorityValue() + "] <" + r.getKey() + "," + r.getValue() + "> \n";
+        //System.out.println("[" + r.getPriorityValue() + "] <" + r.getKey() + "," + r.getValue() + "> \n");
         numOfSpaces++;
 
         preOrder(r.getLeft(), numOfSpaces);
@@ -493,5 +598,22 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
         return current;
     }
+
+    public void fixMaxPriorities(Node<K,V> r){
+        if(r == null){
+            return;
+        }
+
+        fixMaxPriorities(r.getLeft());
+
+        if(r.getPriorityValue() == MAX_PRIORITY){
+            r.setPriorityValue(MAX_PRIORITY -1);
+        }
+
+        fixMaxPriorities(r.getRight());
+        
+    }
+
+
 
 }

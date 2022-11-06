@@ -176,12 +176,12 @@ public class TestingFile {
         // treap.findNode(2, false).printNode();
         // treap.findNode(6, false).printNode();
 
-        treap.printTreeInOrder(treap.root);
-        treap.rotateRight(treap.findNode(0, false));
+        System.out.println(treap.toString());
         //treap.rotateLeft(treap.findNode(1, false));
+        treap.rotateRight(treap.findNode(0, false));
 
 
-        treap.printTreeInOrder(treap.root);
+        System.out.println(treap.toString());
     }
 
     @Test
@@ -192,18 +192,22 @@ public class TestingFile {
         treap.insert(1, 6, 20);
         treap.insert(0, 19, 9);
         treap.insert(4, 8, 13);
-
-        treap.printTreeInOrder(treap.root);
+        treap.insert(5, 3, 1);
         
-        treap.rotateLeft(treap.findNode(4, false));
+        System.out.println(treap.toString());
+
+        treap.rotateLeft(treap.findNode(5, false));
+        treap.rotateRight(treap.findNode(4, false));
         System.out.println("****");
 
-        treap.printTreeInOrder(treap.root);
+        System.out.println(treap.toString());
 
-        treap.rotateLeft(treap.findNode(3, false));
-        System.out.println("****");
+        ///System.out.println(treap.toString());
 
-        treap.printTreeInOrder(treap.root);
+        // treap.rotateLeft(treap.findNode(3, false));
+        // System.out.println("****");
+
+        //System.out.println(treap.toString());
 
 
     }
@@ -226,15 +230,14 @@ public class TestingFile {
 
         treap.insert(2, 23, 898);
 
-        treap.printTreeInOrder(treap.root);
-
+        System.out.println(treap.toString());
         System.out.println("*****");
-        //treap.remove(12);
-        //treap.remove(100);
-        //treap.remove(2);
+        treap.remove(12);
+        treap.remove(100);
+        treap.remove(2);
         treap.remove(9);
 
-        treap.printTreeInOrder(treap.root);
+        System.out.println(treap.toString());
 
     }
 
