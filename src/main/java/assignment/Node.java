@@ -6,6 +6,7 @@ public class Node<K,V> {
     private V value;
      Node<K,V> left;
      Node<K,V> right;
+     Node<K, V> parent;
 
     public Node(){
         priorityValue = 0;
@@ -13,6 +14,7 @@ public class Node<K,V> {
         value = null;
         left = null;
         right = null;
+        parent = null;
     }
 
     public Node(int pri, K k, V v){
@@ -21,14 +23,16 @@ public class Node<K,V> {
         value = v;
         left = null;
         right = null;
+        parent = null;
     }
 
-    public Node(int pri, K k, V v, Node<K,V> l, Node<K,V> r){
+    public Node(int pri, K k, V v, Node<K,V> l, Node<K,V> r, Node<K,V> par){
         priorityValue = pri;
         key = k;
         value = v;
         left = l;
         right = r;
+        parent = null;
     }
 
     public void setPriorityValue(int input){
@@ -49,6 +53,10 @@ public class Node<K,V> {
 
     public void setRight(Node<K,V> a){
         right = a;
+    }
+
+    public void setParent(Node<K,V> a){
+        parent = a;
     }
     
     public int getPriorityValue(){
@@ -71,6 +79,9 @@ public class Node<K,V> {
         return right;
     }
 
+    public Node<K,V> parent(){
+        return parent;
+    }
     public void printNode(){
         K l;
         K r;

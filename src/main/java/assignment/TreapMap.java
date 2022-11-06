@@ -9,9 +9,9 @@ import java.util.Stack;
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
 public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
-    ArrayList<Node<K,V>> printList = new ArrayList<Node<K,V>>();
     Node<K,V> root;
     Stack<Node<K,V>> stack = new Stack<Node<K,V>>();
+    String tString = "";
 
     public TreapMap(){
         root = null;
@@ -108,15 +108,11 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
             }
         
             else if(rightPriVal >= leftPriVal){
-                //System.out.println("before rotate: parentNode is: " + parentNode.getKey() + ", currentNode is: " + current.getKey());
                 rotateLeft(findNode(current.getRight().getKey(), false));
                 childLeft = true;
-                //System.out.println("after rotate: parentNode is: " + parentNode.getKey() + ", currentNode is: " + current.getKey());
-
             }
 
             else{
-                //System.out.println("before rotate: parentNode is: " + parentNode.getKey() + ", currentNode is: " + current.getKey() + ", current child: " + current.getLeft().getKey());
                 rotateRight(findNode(current.getLeft().getKey(), false));
                 childLeft = false;
                 //System.out.println("after rotate: parentNode is: " + parentNode.getKey() + ", currentNode is: " + current.getKey() + ", current child: " + current.getLeft().getKey());
@@ -154,7 +150,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         
 
     @Override
-    public Treap[] split(K key) {
+    public Treap<K,V>[] split(K key) {
         V value = root.getValue();
 
         insert(key, value, MAX_PRIORITY);
@@ -163,6 +159,9 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         Node<K,V> newLeftRoot = rootNode.getLeft();
         Node<K,V> newRightRoot = rootNode.getRight();
 
+        System.out.println("in split!!");
+        System.out.println(toString());
+        System.out.println("********");
         rootNode.setLeft(null);
         rootNode.setRight(null);
         
@@ -179,42 +178,112 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
     }
 
     @Override
-    public void join(Treap t) {
+    public void join(Treap<K, V> t) {
+        Node<K,V> maxNode;
+
+        if(!(t instanceof TreapMap<?, ?>)){
+            System.err.println("the treap object passed is not a treapmap.");
+            return;
+        }
+
+        //creates arbitrary new root
+        Node<K,V> newRoot = new Node<K,V>();
+        newRoot.setPriorityValue(MAX_PRIORITY);
         
-        //if the first key this is greater than t, then t becomes left subtree and this becomes right subtree
-        //else this becomes left subtree and t becomes right subtree
+        Node<K,V> troot = ((TreapMap<K,V>) t).root;
+        
+        if(root.getKey().compareTo(troot.getKey()) > 0){
+            maxNode = ((TreapMap<K,V>) t).getMax();
+            ((TreapMap<K,V>) t).remove(maxNode.getKey());
 
-        //make some new treap with some random root (and perhaps make this root have max priority)
-        //then x.setLeft and x.setRight
+            newRoot.setLeft(troot);
+            newRoot.setRight(root);
 
-        //then remove x -- even if there are duplicates, will automatically remove x first because of how findNode works
+        }
+        else{
+            maxNode = getMax();
+            remove(maxNode.getKey());
+
+            newRoot.setLeft(root);
+            newRoot.setRight(troot);
+        }
+
+        newRoot.setKey(maxNode.getKey());
+        newRoot.setValue(maxNode.getValue());
+
+        root = newRoot;
+
+     
+    }
+
+    public class TreapMapIterator implements Iterator<K>{
+        Stack<Node<K,V>> iterStack;
+        Node<K,V> current;
+
+        
+        public TreapMapIterator(TreapMap<K,V> treapy){
+            iterStack = new Stack<Node<K,V>>();
+            current = treapy.root;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if(current != null || !(iterStack.isEmpty())){
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public K next() {
+            while(hasNext()){
+                while(current != null){
+                    iterStack.push(current);
+                    current = current.getLeft();
+                }
+
+                current = stack.pop();
+                
+                K returnKey = current.getKey();
+
+                current = current.getRight();
+
+                return returnKey;
+            }
+            return null;
+        }
         
     }
 
     @Override
     public void meld(Treap t) throws UnsupportedOperationException {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void difference(Treap t) throws UnsupportedOperationException {
-        // TODO Auto-generated method stub
-        
+    public void difference(Treap t) throws UnsupportedOperationException {        
     }
 
     @Override
-    public Iterator iterator() {
-       return null;
+    public Iterator<K> iterator() {
+       Iterator<K> iter = new TreapMapIterator(this);
+       return iter;
     }
 
     @Override
     public double balanceFactor() throws UnsupportedOperationException {
-        // TODO Auto-generated method stub
         return 0;
     }
 
-    
+    @Override
+    public String toString(){
+        tString = "";
+        int spaceCount = 0;
+
+        preOrder(root, spaceCount);
+        
+        return tString;
+    }
 
     //overloaded insert
     public void insert(K key, V value, int pri) {
@@ -225,7 +294,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         //create new node with key, val and priority value
         Node<K,V> newNode = new Node<K,V>(newPriority, key, value);
 
-        //assuming no duplicates at the moment
+        //assuming no duplicates at the moment --- becomes problem when there are duplicates
         Node<K,V> parentNode = findNode(key, true);
 
         if(parentNode == null){
@@ -263,7 +332,6 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         printTreeInOrder(r.getLeft());
 
         r.printNode();
-        printList.add(r);
 
         printTreeInOrder(r.getRight());
     }
@@ -391,12 +459,39 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
             else{
                 stack.peek().setRight(center);
             }
-
         }
 
         else{
             root = center;
         }
-
     }
+
+    public void preOrder(Node<K,V> r, int numOfSpaces){      
+    
+        if(r == null){
+            numOfSpaces--;
+            return;
+        }
+
+        for(int i = 0; i < numOfSpaces; i++){
+            tString = tString + "\t";
+        }  
+
+        tString = tString + "[" + r.getPriorityValue() + "] <" + r.getKey() + "," + r.getValue() + "> \n";
+        numOfSpaces++;
+
+        preOrder(r.getLeft(), numOfSpaces);
+
+        preOrder(r.getRight(), numOfSpaces);
+    }
+
+    public Node<K,V> getMax(){
+        Node<K,V> current = root;
+        while(current.getRight()!= null){
+            current = current.getRight();
+        }
+
+        return current;
+    }
+
 }

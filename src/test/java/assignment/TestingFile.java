@@ -237,5 +237,63 @@ public class TestingFile {
         treap.printTreeInOrder(treap.root);
 
     }
+
+    @Test
+    public void testSplit(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+
+        treap.insert(1, 6, 20);
+        
+        treap.insert(0, 19, 9);
+       
+        treap.insert(4, 8, 13);
+
+        treap.insert(12, 8, 22);
+        
+        treap.insert(100, 34, 1000);
+
+        treap.insert(2, 23, 898);
+
+        System.out.println(treap.toString());
+
+        Treap<Integer, Integer>[] arr;
+        arr = treap.split(12);
+
+        System.out.println("******");
+        System.out.println(arr[0].toString());
+
+        System.out.println("******");
+        System.out.println(arr[1].toString());
+
+    }
+
+    @Test
+    public void testToString(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+
+        treap.insert(1, 6, 20);
+        
+        treap.insert(0, 19, 9);
+       
+        treap.insert(4, 8, 13);
+
+        treap.insert(12, 8, 22);
+        
+        treap.insert(100, 34, 1000);
+
+        treap.insert(2, 23, 898);
+
+        treap.insert(11, 12, 14);
+
+        treap.insert(13, 43, 16);
+        
+        treap.insert(9, 54, 20);
+
+        System.out.println(treap.toString());
+    }
     
 }
