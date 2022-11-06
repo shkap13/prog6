@@ -253,7 +253,7 @@ public class TestingFile {
        
         treap.insert(4, 8, 13);
 
-        treap.insert(12, 8, 22);
+        treap.insert(12, 8, treap.MAX_PRIORITY);
         
         treap.insert(100, 34, 1000);
 
@@ -262,7 +262,7 @@ public class TestingFile {
         System.out.println(treap.toString());
 
         Treap<Integer, Integer>[] arr;
-        arr = treap.split(12);
+        arr = treap.split(1);
 
         System.out.println("******");
         System.out.println(arr[0].toString());
@@ -270,6 +270,45 @@ public class TestingFile {
         System.out.println("******");
         System.out.println(arr[1].toString());
 
+    }
+
+    @Test
+    public void testJoin(){
+        TreapMap<Integer,Integer> treap1 = new TreapMap<Integer, Integer>();
+        treap1.insert(14, 12);
+        treap1.insert(13, 12);
+        treap1.insert(10, 12);
+        treap1.insert(8, 12);
+
+        System.out.println(treap1.toString());
+        System.out.println("**********");
+
+        TreapMap<Integer,Integer> treap2 = new TreapMap<Integer, Integer>();
+        treap2.insert(20, 12);
+        treap2.insert(30, 12);
+        treap2.insert(48, 12);
+        treap2.insert(65, 12);
+
+        System.out.println(treap2.toString());
+        System.out.println("**********");
+
+        treap1.join(treap2);
+
+        System.out.println(treap1.toString());
+
+    }
+
+    @Test
+    public void testJoinNull(){
+        TreapMap<Integer,Integer> treap1 = new TreapMap<Integer, Integer>();
+        treap1.insert(14, 12);
+        treap1.insert(13, 12);
+        treap1.insert(10, 12);
+        treap1.insert(8, 12);
+
+        treap1.join(null);
+
+        System.out.println(treap1.toString());
     }
 
     @Test

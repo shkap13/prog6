@@ -23,6 +23,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
     @Override
     public V lookup(K key) {
+        if(key == null){
+            System.err.println("Null keys do not exist in this tree and will return a null value -- lookup");
+            return null;
+        }
         Node<K,V> found = findNode(key, false);
 
         if(found.getKey().compareTo(key) == 0){
@@ -34,6 +38,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
     @Override
     public void insert(K key, V value) {
+        if(key == null || value == null){
+            System.err.println("Null keys and values are not accepted and thus will not be inserted into the tree  -- insert");
+            return;
+        }
         
         //generate priority value
         int newPriority = generatePriority();
@@ -79,6 +87,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
     @Override
     public V remove(K key) {
+        if(key == null){
+            System.err.println("Null keys are not accepted and will return a null value -- remove");
+            return null;
+        }
         boolean childLeft = true;
         Node<K, V> current;
         Node<K, V> parentNode;
@@ -148,6 +160,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
     @Override
     public Treap<K,V>[] split(K key) {
+        if(key == null){
+            System.err.println("Null keys are not accepted and will return a null value -- split");
+            return null;
+        }
         V value = root.getValue();
 
         Node<K,V> checkNode = findNode(key, false);
@@ -170,10 +186,6 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         newLeftRoot.setParent(null);
         Node<K,V> newRightRoot = rootNode.getRight();
         newRightRoot.setParent(null);
-
-        System.out.println("in split!!");
-        System.out.println(toString());
-        System.out.println("********");
 
         
         if(checkNode != null){
@@ -201,6 +213,10 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
     @Override
     public void join(Treap<K, V> t) {
+        if(t == null){
+            System.err.println("the treap object passed is null and thus cannot be combined with the current treap");
+            return;
+        }
         Node<K,V> maxNode;
 
         if(!(t instanceof TreapMap<?, ?>)){
