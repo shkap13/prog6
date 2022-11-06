@@ -1,5 +1,6 @@
 package assignment;
 
+//node -- module that stores key/value pairs and pointers to other nodes
 public class Node<K,V> {
     private int priorityValue;
     private K key;
@@ -82,15 +83,16 @@ public class Node<K,V> {
     public Node<K,V> getParent(){
         return parent;
     }
+
     public void printNode(){
         K l;
         K r;
+        
         System.out.println("priority value: " + getPriorityValue() + ", key is: " + getKey() + ", value is: " + getValue());
 
         if(left != null){
             l = left.getKey();
         }
-
         else{
             l = null;
         }
@@ -98,7 +100,6 @@ public class Node<K,V> {
         if(right != null){
             r = right.getKey();
         }
-
         else{
             r = null;
         }

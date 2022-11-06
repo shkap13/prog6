@@ -1,70 +1,46 @@
 package assignment;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+
+import assignment.TreapMap.TreapMapIterator;
 
 public class TestingFile {
 
+    //for insert add 2 methods 1) recursively ensure that the bst propery is held 
+    //and 2) the recursively ensure the heap property is held
     @Test
-    public void testInsert(){
+    public void testInsertGeneral(){
         TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
 
         treap.insert(3, 5);
-        treap.findNode(3, false).printNode();
-        System.out.println("*****");
-
         treap.insert(1, 6);
-        treap.findNode(1, false).printNode();
-        System.out.println("*****");
-
-
         treap.insert(0, 19);
-        treap.findNode(0, false).printNode();
-        System.out.println("*****");
-
         treap.insert(4, 8);
-        treap.findNode(4, false).printNode();
-        System.out.println("*****");
 
+        System.out.println(treap.toString());
+    }
 
+    @Test
+    public void testInsertKeyChange(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
 
-        treap.insert(6, 10);
-        treap.findNode(6, false).printNode();
-        System.out.println("*****");
+        treap.insert(3, 5);
+        treap.insert(1, 6);
+        treap.insert(0, 19);
+        treap.insert(4, 8);
+        //make sure is changed
+        treap.insert(4, 10);
 
-
-        
-        treap.insert(12, 15);
-        treap.findNode(12, false).printNode();
-        treap.findNode(6, false).printNode();
-
-        System.out.println("*****");
-
-
-
-        treap.insert(32, 0);
-        treap.findNode(32, false).printNode();
-        treap.findNode(6, false).printNode();
-
-        System.out.println("*****");
-
-
-
-        treap.insert(2, 2);
-        treap.findNode(2, false).printNode();
-        treap.findNode(6, false).printNode();
-
-        System.out.println("*****");
-
-
-        System.out.println("--------------");
-
-        treap.printTreeInOrder(treap.root);
-
-        System.out.println("--------------");
-
+        System.out.println(treap.toString());
     }
 
     @Test
@@ -72,11 +48,8 @@ public class TestingFile {
         TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
 
         treap.insert(3, 5);
-
         treap.insert(1, 6);
-        
         treap.insert(0, 19);
-       
         treap.insert(4, 8);
       
         assertAll(
@@ -85,160 +58,12 @@ public class TestingFile {
           () ->  assertEquals(19, treap.lookup(0)),
           () ->  assertEquals(8, treap.lookup(4)),
 
+          //make sure to return null if there are no values
           () ->  assertEquals(null, treap.lookup(7)),
           () ->  assertEquals(null, treap.lookup(10)),
           () ->   assertEquals(null, treap.lookup(566)
 
         ));
-
-    }
-
-    @Test
-    public void testFindNode(){
-        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
-
-        treap.insert(3, 5, 10);
-
-        treap.insert(1, 6, 20);
-        
-        treap.insert(0, 19, 9);
-       
-        treap.insert(4, 8, 13);
-
-        treap.printTreeInOrder(treap.root);
-
-        assertAll(
-            () -> assertEquals(1, treap.findNode(1, false).getKey()),
-            () -> assertEquals(0, treap.findNode(0, false).getKey()),
-            () -> assertEquals(3, treap.findNode(3, false).getKey()),
-            () -> assertEquals(4, treap.findNode(4, false).getKey()),
-            () -> assertEquals(4, treap.findNode(12, false).getKey()),
-
-
-            
-            () -> assertEquals(null, treap.findNode(1, true)),
-            () -> assertEquals(1, treap.findNode(0, true).getKey()),
-            () -> assertEquals(1, treap.findNode(4, true).getKey()),
-            () -> assertEquals(4, treap.findNode(3, true).getKey()),
-
-            () -> assertEquals(4, treap.findNode(12, true).getKey()),
-            () -> assertEquals(0, treap.findNode(-1, true).getKey())
-
-
-        );
-
-    }
-
-    @Test
-    public void testRotateRight(){
-        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
-
-        treap.insert(3, 5, 10);
-        // treap.findNode(3, false).printNode();
-        // System.out.println("*****");
-
-        treap.insert(1, 6, 9);
-        // treap.findNode(1, false).printNode();
-        // System.out.println("*****");
-
-
-        treap.insert(0, 19, 6);
-        // treap.findNode(0, false).printNode();
-        // System.out.println("*****");
-
-        treap.insert(4, 8, 13);
-        // treap.findNode(4, false).printNode();
-        // System.out.println("*****");
-
-        // treap.insert(6, 10);
-        // // treap.findNode(6, false).printNode();
-        // // System.out.println("*****");
-
-
-        
-        // treap.insert(12, 15);
-        // // treap.findNode(12, false).printNode();
-        // // treap.findNode(6, false).printNode();
-
-        // //System.out.println("*****");
-
-
-
-        // treap.insert(32, 0);
-        // treap.findNode(32, false).printNode();
-        // treap.findNode(6, false).printNode();
-
-        //System.out.println("*****");
-
-
-
-        //treap.insert(2, 2);
-        // treap.findNode(2, false).printNode();
-        // treap.findNode(6, false).printNode();
-
-        System.out.println(treap.toString());
-        //treap.rotateLeft(treap.findNode(1, false));
-        treap.rotateRight(treap.findNode(0, false));
-
-
-        System.out.println(treap.toString());
-    }
-
-    @Test
-    public void testRotateLeft(){
-        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
-
-        treap.insert(3, 5, 10);
-        treap.insert(1, 6, 20);
-        treap.insert(0, 19, 9);
-        treap.insert(4, 8, 13);
-        treap.insert(5, 3, 1);
-        
-        System.out.println(treap.toString());
-
-        treap.rotateLeft(treap.findNode(5, false));
-        treap.rotateRight(treap.findNode(4, false));
-        System.out.println("****");
-
-        System.out.println(treap.toString());
-
-        ///System.out.println(treap.toString());
-
-        // treap.rotateLeft(treap.findNode(3, false));
-        // System.out.println("****");
-
-        //System.out.println(treap.toString());
-
-
-    }
-
-    @Test
-    public void testRemove(){
-        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
-
-        treap.insert(3, 5, 10);
-
-        treap.insert(1, 6, 20);
-        
-        treap.insert(0, 19, 9);
-       
-        treap.insert(4, 8, 13);
-
-        treap.insert(12, 8, 22);
-        
-        treap.insert(100, 34, 1000);
-
-        treap.insert(2, 23, 898);
-
-        System.out.println(treap.toString());
-        System.out.println("*****");
-        treap.remove(12);
-        treap.remove(100);
-        treap.remove(2);
-        treap.remove(9);
-
-        System.out.println(treap.toString());
-
     }
 
     @Test
@@ -246,24 +71,19 @@ public class TestingFile {
         TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
 
         treap.insert(3, 5, 10);
-
         treap.insert(1, 6, 20);
-        
         treap.insert(0, 19, 9);
-       
         treap.insert(4, 8, 13);
-
         treap.insert(12, 8, treap.MAX_PRIORITY);
-        
         treap.insert(100, 34, 1000);
-
         treap.insert(2, 23, 898);
 
         System.out.println(treap.toString());
 
         Treap<Integer, Integer>[] arr;
         arr = treap.split(1);
-
+        //arr = treap.split(null);
+        
         System.out.println("******");
         System.out.println(arr[0].toString());
 
@@ -337,5 +157,174 @@ public class TestingFile {
 
         System.out.println(treap.toString());
     }
+
+    @Test
+    public void testIterator(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+        treap.insert(1, 6, 20);
+        treap.insert(0, 19, 9);
+        treap.insert(4, 8, 13);
+        treap.insert(12, 8, 22);
+        treap.insert(100, 34, 1000);
+        treap.insert(2, 23, 898);
+        treap.insert(11, 12, 14);
+        treap.insert(13, 43, 16);
+        treap.insert(9, 54, 20);
+
+        System.out.println(treap.toString());
+        System.out.println("*****");
+
+        Iterator<Integer> iter= treap.iterator();
+
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+
+    }
+
+    @Test
+    public void testIteratorModificationError(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+        treap.insert(1, 6, 20);
+        treap.insert(0, 19, 9);
+        treap.insert(4, 8, 13);
+        treap.insert(12, 8, 22);
+        treap.insert(100, 34, 1000);
+        treap.insert(2, 23, 898);
+        treap.insert(11, 12, 14);
+        treap.insert(13, 43, 16);
+        treap.insert(9, 54, 20);
+
+        System.out.println(treap.toString());
+        System.out.println("*****");
+
+        Iterator<Integer> iter= treap.iterator();
+
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+        if(iter.hasNext()){
+            System.out.println(iter.next());
+        }
+
+        treap.insert(3, 10);
+
+        Assertions.assertThrows(ConcurrentModificationException.class ,
+        ()-> iter.hasNext());
+
+    }
+
+
+
+    //SPECIFIC TO MY IMPLEMENTATION
+    @Test
+    public void testFindNode(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+        treap.insert(1, 6, 20);
+        treap.insert(0, 19, 9);
+        treap.insert(4, 8, 13);
+
+        System.out.println(treap.toString());
+        
+        assertAll(
+            () -> assertEquals(1, treap.findNode(1, false).getKey()),
+            () -> assertEquals(0, treap.findNode(0, false).getKey()),
+            () -> assertEquals(3, treap.findNode(3, false).getKey()),
+            () -> assertEquals(4, treap.findNode(4, false).getKey()),
+            () -> assertEquals(4, treap.findNode(12, false).getKey()),
+
+
+            
+            () -> assertEquals(null, treap.findNode(1, true)),
+            () -> assertEquals(1, treap.findNode(0, true).getKey()),
+            () -> assertEquals(1, treap.findNode(4, true).getKey()),
+            () -> assertEquals(4, treap.findNode(3, true).getKey()),
+
+            () -> assertEquals(4, treap.findNode(12, true).getKey()),
+            () -> assertEquals(0, treap.findNode(-1, true).getKey())
+
+
+        );
+
+    }
+
+    @Test
+    public void testRotateRight(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+        treap.insert(1, 6, 9);
+        treap.insert(0, 19, 6);
+        treap.insert(4, 8, 13);
+
+        System.out.println(treap.toString());
+        treap.rotateRight(treap.findNode(0, false));
+        System.out.println(treap.toString());
+    }
+
+    @Test
+    public void testRotateLeft(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+        treap.insert(1, 6, 20);
+        treap.insert(0, 19, 9);
+        treap.insert(4, 8, 13);
+        treap.insert(5, 3, 1);
+        
+        System.out.println(treap.toString());
+
+        treap.rotateLeft(treap.findNode(5, false));
+        treap.rotateRight(treap.findNode(4, false));
+        System.out.println("****");
+
+        System.out.println(treap.toString());
+
+    }
+
+    @Test
+    public void testRemoveForcePriority(){
+        TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
+
+        treap.insert(3, 5, 10);
+        treap.insert(1, 6, 20);
+        treap.insert(0, 19, 9);
+        treap.insert(4, 8, 13);
+        treap.insert(12, 8, 22);
+        treap.insert(100, 34, 1000);
+        treap.insert(2, 23, 898);
+
+        System.out.println(treap.toString());
+        System.out.println("*****");
+        treap.remove(12);
+        treap.remove(100);
+        treap.remove(2);
+        treap.remove(9);
+
+        System.out.println(treap.toString());
+
+    }
+
     
 }
