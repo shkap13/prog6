@@ -5,10 +5,11 @@ public class Node<K,V> {
     private int priorityValue;
     private K key;
     private V value;
-     Node<K,V> left;
-     Node<K,V> right;
-     Node<K, V> parent;
+    Node<K,V> left;
+    Node<K,V> right;
+    Node<K, V> parent;
 
+    //3 different constructors
     public Node(){
         priorityValue = 0;
         key = null;
@@ -36,6 +37,7 @@ public class Node<K,V> {
         parent = null;
     }
 
+    //setters
     public void setPriorityValue(int input){
         priorityValue = input;
     }
@@ -60,6 +62,7 @@ public class Node<K,V> {
         parent = a;
     }
     
+    //getters
     public int getPriorityValue(){
         return priorityValue;
     }
@@ -84,6 +87,7 @@ public class Node<K,V> {
         return parent;
     }
 
+    //method used to print node -- useful for debugging
     public void printNode(){
         K l;
         K r;
