@@ -11,9 +11,6 @@ import javax.swing.text.DefaultStyledDocument.ElementSpec;
 public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
     Node<K,V> root;
 
-    //stack used in findNode
-    Stack<Node<K,V>> stack = new Stack<Node<K,V>>();
-    
     //string updated for toString
     String tString = "";
 
@@ -93,7 +90,7 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         
         //reheapifying by rotating
         while((newNode.getParent() != null) && (newNode.getPriorityValue() > newNode.getParent().getPriorityValue())){
-            if(newNode.getKey().compareTo(stack.peek().getKey()) < 0){
+            if(newNode.getKey().compareTo(newNode.getParent().getKey()) < 0){
                 rotateRight(newNode);
             }
             else{
@@ -102,12 +99,12 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         }
     }
 
+    //need to check the remove -- failling with null pointer exceptions
     @Override
     public V remove(K key) {
 
         //input validation
         if(key == null){
-            System.err.println("Null keys are not accepted and will return a null value -- remove");
             return null;
         }
 
@@ -140,9 +137,17 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
             //if leaf node to begin with
             if(rightPriVal == -1 && leftPriVal == -1){
-                if(current.getKey().compareTo(current.getParent().getKey()) < 0){
+
+                //in case current is equal to the root
+                if(current.getKey().compareTo(root.getKey()) == 0){
+                    root = null;
+                    return current.getValue();
+                }
+                //if left child
+                else if(current.getKey().compareTo(current.getParent().getKey()) < 0){
                     childLeft = true;
                 }
+                //if right child
                 else{
                     childLeft = false;
                 }
@@ -176,14 +181,18 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
     } 
         
 
+    //null pointer exception -- check for that
     @Override
     public Treap<K,V>[] split(K key) {
 
+        //creates array for new treaps (array intended for generics)
+        Treap<K,V>[] treapArray = (Treap<K,V>[]) Array.newInstance(this.getClass(), 2);
+
         //input validation
         if(key == null){
-            System.err.println("Null keys are not accepted and will simply return an array of size 1, containing only the original treap -- split");
-            Treap<K,V>[] treapArray = (Treap<K,V>[]) Array.newInstance(this.getClass(), 1);
-            treapArray[0] = this;
+            TreapMap<K,V> empty = new TreapMap<K,V>();
+            treapArray[0] = empty;
+            treapArray[1] = empty;
 
             return treapArray;
         }
@@ -213,11 +222,15 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
         //find root of left subtree and splitting it off
         Node<K,V> newLeftRoot = rootNode.getLeft();
-        newLeftRoot.setParent(null);
+        if(newLeftRoot != null){
+            newLeftRoot.setParent(null);
+        }
 
         //finding root of right subtree and splitting it off
         Node<K,V> newRightRoot = rootNode.getRight();
-        newRightRoot.setParent(null);
+        if(newRightRoot != null){
+            newRightRoot.setParent(null);
+        }
 
         //if the key of the inserted node exists
         if(checkNode != null){
@@ -232,16 +245,26 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
 
         rootNode.setLeft(null);
         
-        //creates array for new treaps (array intended for generics)
-        Treap<K,V>[] treapArray = (Treap<K,V>[]) Array.newInstance(this.getClass(), 2);
-        
         //makes treaps with roots and assigns them into array
-        TreapMap<K,V> leftTreap = new TreapMap<>(newLeftRoot);
-        treapArray[0] = leftTreap;
+        if(newLeftRoot != null){
+            TreapMap<K,V> leftTreap = new TreapMap<>(newLeftRoot);
+            treapArray[0] = leftTreap;
+        }
+        else{
+            TreapMap<K,V> leftTreap = new TreapMap<>();
+            treapArray[0] = leftTreap;
+        }
 
-        TreapMap<K,V> rightTreap = new TreapMap<>(newRightRoot);
-        treapArray[1] = rightTreap;
-
+        if(newRightRoot != null){
+            TreapMap<K,V> rightTreap = new TreapMap<>(newRightRoot);
+            treapArray[1] = rightTreap;
+    
+        }
+        else{
+            TreapMap<K,V> rightTreap = new TreapMap<>();
+            treapArray[1] = rightTreap;
+        }
+       
         return treapArray;
     }
 
@@ -422,11 +445,6 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
         Node<K,V> current = root;
         Node<K,V> parentNode = null;
 
-        //creates fresh stack every time findNode is called
-        stack.clear();
-
-        stack.push(root);
-
         while(current != null){
 
             //if same key is found, the node is returned
@@ -438,11 +456,6 @@ public class TreapMap<K extends Comparable<K>, V> implements Treap<K,V>{
                     return parentNode;
                 }  
                 return current;
-            }
-
-            //only add current if it is not the root
-            if(!current.equals(root)){
-                stack.push(current);
             }
 
             //if key is less than current key
