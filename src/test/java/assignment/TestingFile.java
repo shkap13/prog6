@@ -94,28 +94,26 @@ public class TestingFile {
         treap.insert(4, 8);
         treap.insert(12, 8);
         treap.insert(100, 34);
-        treap.insert(2, 23);
-        treap.insert(235, 8);
-        treap.insert(11, 12);
-        treap.insert(13, 43);
-        treap.insert(9, 54);
-        treap.insert(10, 12);
-        treap.insert(9, 32);
-        treap.insert(132, 33);
-       
 
         System.out.println(treap.toString());
     }
 
     @Test
     public void testInsertGeneral(){
+        System.out.println("printing from testInser general look below");
         TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
 
         for(int i = 0; i < 100; i++){
             treap.insert(i,i);
             assertEquals(true, testHeapProperty(changeToStringToArray(treap.toString())));
+
+            System.out.println(treap.toString());
             assertTrue(testBSTProperty(changeToStringToArray(treap.toString())));
         }
+
+        // System.out.println(treap.toString());
+        // assertEquals(true, testHeapProperty(changeToStringToArray(treap.toString())));
+        // assertTrue(testBSTProperty(changeToStringToArray(treap.toString())));
     }
 
     @Test
@@ -126,8 +124,6 @@ public class TestingFile {
         treap.insert(1, 6);
         treap.insert(0, 19);
         treap.insert(4, 8);
-
-        System.out.println(treap.toString());
       
         assertAll(
           () -> assertEquals(5, treap.lookup(3)),
@@ -181,6 +177,7 @@ public class TestingFile {
         TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
 
         treap.insert(null, 0);
+        System.out.println(treap.toString());
         assertTrue(testHeapProperty(changeToStringToArray(treap.toString())));
         assertTrue(testBSTProperty(changeToStringToArray(treap.toString())));
 
@@ -191,6 +188,7 @@ public class TestingFile {
         TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
 
         treap.insert(10, null);
+        System.out.println(treap.toString());
         assertTrue(testHeapProperty(changeToStringToArray(treap.toString())));
         assertTrue(testBSTProperty(changeToStringToArray(treap.toString())));
 
@@ -300,25 +298,25 @@ public class TestingFile {
     public void testJoinOtherDirection(){
         TreapMap<Integer,Integer> treap1 = new TreapMap<Integer, Integer>();
         
-        for(int i = 1; i < 120; i++){
+        for(int i = 1; i < 10; i++){
             treap1.insert(generateRandomKey(150), i);
         }
 
         TreapMap<Integer,Integer> treap2 = new TreapMap<Integer, Integer>();
-        for(int i = 1; i < 120; i++){
+        for(int i = 1; i < 10; i++){
             treap2.insert(generateRandomKey(150) + 180, i);
         }
 
         treap2.join(treap1);
         assertTrue(testHeapProperty(changeToStringToArray(treap2.toString())));
+
+        System.out.println(treap2.toString());
         assertTrue(testBSTProperty(changeToStringToArray(treap2.toString())));
     }
 
     @Test
     public void testJoinNull(){
         TreapMap<Integer,Integer> treap1 = new TreapMap<Integer, Integer>();
-
-    
         for(int i = 1; i < 120; i++){
             treap1.insert(generateRandomKey(150), i);
         }
@@ -383,7 +381,7 @@ public class TestingFile {
         treap.insert(159, 43);
         treap.insert(450, 43);
 
-        for(int i = 1; i < 120; i++){
+        for(int i = 1; i < 12; i++){
             treap.insert(generateRandomKey(150), i);
             treap.insert(generateRandomKey(150) + 300, i);
             
@@ -420,7 +418,14 @@ public class TestingFile {
             }
         }
 
+        System.out.println(arr[0].toString());
+        System.out.println("********");
+        System.out.println(arr[1].toString());
+
         if((max0 != -1) && (max1 != -1) && (min0 != 122) && (min1 != 122)){
+            System.out.println(min0 + " " + max0);
+            System.out.println(min1 + " " + max1);
+
             assertTrue((max0 < min1) || (max1 < min0));
         }
 
@@ -637,7 +642,7 @@ public class TestingFile {
 
     }
 
-    //somewhat manually check
+    //somewhat manually check to differentiate next and hasNext
     @Test
     public void testIteratorModificationError(){
         TreapMap<Integer, Integer> treap = new TreapMap<Integer, Integer>();
@@ -653,9 +658,9 @@ public class TestingFile {
         Assertions.assertThrows(ConcurrentModificationException.class ,
         ()-> iter.hasNext());
 
-        if(iter.hasNext()){
-            System.out.println(iter.next() + "should not print out!");
-        }
+        // if(iter.hasNext()){
+        //     System.out.println(iter.next() + "should not print out!");
+        // }
 
 
     }
@@ -686,21 +691,21 @@ public class TestingFile {
             Matcher matcher = pattern.matcher(linebyline[i]);
             if (matcher.find())
             {
-                aList.get(i)[1] = Integer.parseInt(matcher.group(1));
+                aList.get(i)[1] = Integer.parseInt(matcher.group(1).strip());
             }
             
             pattern = Pattern.compile("<(.*?),");
             matcher = pattern.matcher(linebyline[i]);
             if (matcher.find())
             {
-                aList.get(i)[2] = Integer.parseInt(matcher.group(1));
+                aList.get(i)[2] = Integer.parseInt(matcher.group(1).strip());
             }
 
             pattern = Pattern.compile(",(.*?)>");
             matcher = pattern.matcher(linebyline[i]);
             if (matcher.find())
             {
-                aList.get(i)[3] = Integer.parseInt(matcher.group(1));
+                aList.get(i)[3] = Integer.parseInt(matcher.group(1).strip());
             }   
 
             // for(int j = 0; j < 4; j++){
@@ -717,10 +722,12 @@ public class TestingFile {
         int tabs = 0;
         
         for(int i = 0; i < line.length(); i++){
-            if(line.charAt(i) == '\t'){
+            if(line.substring(i, i+1).equals("\t")){
                 tabs++;
             }
-            else return tabs;
+            else {
+                return tabs;
+            }    
         }
 
         return 0;
@@ -772,8 +779,9 @@ public class TestingFile {
 
             if(right != -1){
                 if(!(aList.get(parent)[2] > aList.get(left)[2]) && (aList.get(right)[2] > aList.get(parent)[2])){
-                    return false;
                     //System.out.println("parent: " + aList.get(parent)[2] + ", left: " + aList.get(left)[2] + ", right: " + aList.get(right)[2]);
+
+                    return false;
                 }
             }
             else{
@@ -790,7 +798,10 @@ public class TestingFile {
 
     public int bstsiblingsearch(ArrayList<int []> aList, int j){
         for(int i = j+1; i < aList.size(); i++){
+            // System.out.println(i + " "+ j + ";" + aList.get(i)[0] + " " +aList.get(j)[0]);
             if(aList.get(j)[0] == aList.get(i)[0]){
+                // System.out.println("went in here, i: " + i + ", j: " + j);
+                // System.out.println(aList.get(i)[0] + " " +aList.get(j)[0]);
                 return i;
             }
             else if(aList.get(j)[0] > aList.get(i)[0]){
